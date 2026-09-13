@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F6F8FB">
+<title>광합성에 필요한 물질과 산물 확인하기 · 가상 실험</title>
+<meta name="description" content="투명 밀폐 용기 속 시금치 잎에 빛을 비추고, 산소·이산화 탄소 농도 변화를 센서로 측정하는 가상 탐구 실험입니다.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="광합성에 필요한 물질과 산물 확인하기 · 가상 실험">
+<meta property="og:description" content="시금치 잎에 LED 빛을 비추고 이산화 탄소·산소 센서로 10분 동안 1분마다 농도를 측정하는 가상 탐구 실험">
+<meta property="og:image" content="https://kimju1416.github.io/photosynthesis-materials/assets/og.jpg">
+<meta property="og:url" content="https://kimju1416.github.io/photosynthesis-materials/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --pt:#2456A6; --pt-h:#1C4487; --bg:#F6F8FB; --card:#fff; --line:#E3E9F2;
+  --tx:#1B2A41; --sub:#64748B; --ok:#1D7A4D; --okbg:#E7F3EC; --err:#C0392B; --errbg:#F9E8E6; --warn:#B26B0F;
+  --co2:#2456A6; --o2:#1D7A4D;
+  --r1:10px; --r2:14px; --bar:60px;
+}
+*{box-sizing:border-box}
+html{-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font-family:'Pretendard Variable','Pretendard',-apple-system,'Malgun Gothic',sans-serif;font-size:15px;line-height:1.6;word-break:keep-all;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;touch-action:manipulation}
+[hidden]{display:none!important}
+
+/* ── 앱바: 제목 · 단계 탭 ── */
+.appbar{position:sticky;top:0;z-index:60;height:var(--bar);display:flex;align-items:center;gap:16px;padding:0 max(20px, env(safe-area-inset-right)) 0 max(20px, env(safe-area-inset-left));background:var(--bg);border-bottom:1px solid var(--line)}
+.appbar h1{margin:0;font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.appbar .sp{flex:1}
+.tabs{display:flex;gap:4px;padding:4px;background:#E8EDF4;border-radius:var(--r2);flex:none}
+.tab{height:42px;padding:0 16px;border:0;border-radius:var(--r1);background:none;color:var(--sub);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.tab b{font-weight:700;margin-right:6px}
+.tab[aria-selected="true"]{background:#fff;color:var(--pt);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.tab.locked{color:#9AA6B5}
+
+/* ── 화면 ── */
+.screen{display:none;gap:16px;padding:16px max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left));max-width:1680px;margin:0 auto;align-items:start}
+.screen.on{display:grid}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+#build{grid-template-columns:232px minmax(0,1fr) 272px}
+#measure{grid-template-columns:minmax(0,1.42fr) minmax(330px,1fr);height:calc(100dvh - var(--bar));padding-bottom:0}
+#measure .col{height:100%;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-bottom:16px}
+.stage-title{margin:0;font-size:18px;font-weight:700;line-height:1.4}
+.stage-wrap{width:min(100%, calc((100dvh - var(--bar) - 32px - var(--below)) * 1.5));margin:0 auto}
+#build .stage-wrap{--below:96px}
+#measure .stage-wrap{--below:210px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:16px}
+.sec{font-size:13px;font-weight:600;color:var(--sub);letter-spacing:.02em;margin:0 0 8px}
+.btn{height:48px;padding:0 20px;border-radius:var(--r1);border:1px solid var(--line);background:#fff;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn.primary{background:var(--pt);border-color:var(--pt);color:#fff}
+.btn.primary:hover{background:var(--pt-h)}
+.btn:disabled{background:#E8EDF4;border-color:#E8EDF4;color:#8795a8;cursor:default}
+.btn.block{width:100%}
+.hint{font-size:13px;color:var(--sub);line-height:1.5;margin:10px 0 0}
+
+/* ── 1단계: 준비물 ── */
+.parts{display:flex;flex-direction:column;gap:8px}
+.part{display:flex;align-items:center;gap:10px;width:100%;min-height:66px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r1);background:#fff;text-align:left;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;transition:border-color .15s,box-shadow .15s}
+.part .th{flex:none;width:48px;height:48px;border-radius:var(--r1);background:#EEF2F6;display:grid;place-items:center;overflow:hidden;pointer-events:none}
+.part .th img{max-width:42px;max-height:42px;object-fit:contain;-webkit-user-drag:none}
+.part .th img.tilt{max-width:none;max-height:none;height:58px;width:auto;transform:rotate(-40deg)}
+.part .tx{min-width:0;pointer-events:none}
+.part b{display:block;font-size:14px;font-weight:700;line-height:1.35}
+.part small{display:block;font-size:12px;color:var(--sub);line-height:1.35}
+.part .ck{flex:none;margin-left:auto;width:22px;height:22px;border-radius:50%;border:1px solid #D3DBE5;pointer-events:none}
+.part.sel{border-color:var(--pt);box-shadow:0 0 0 3px rgba(36,86,166,.16)}
+.part.done{cursor:default;background:#F6F8FB}
+.part.done .th img{opacity:.4}
+.part.done b{color:var(--sub)}
+.part.done .ck{border-color:var(--ok);background:var(--ok) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center/13px no-repeat}
+.pfoot .btn{width:100%;margin-top:12px}
+.status{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 14px;border-radius:var(--r1);background:#fff;border:1px solid var(--line);font-size:15px;font-weight:600}
+.status .cnt{font-variant-numeric:tabular-nums;color:var(--pt);font-weight:700}
+.status.ok{background:var(--okbg);border-color:#CBE5D5;color:var(--ok)}
+
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{position:relative;padding:0 0 12px 34px;counter-increment:s;font-size:14px;line-height:1.5}
+.steps li:last-child{padding-bottom:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:#EAF0F9;color:var(--pt);font-size:12px;font-weight:700;display:grid;place-items:center}
+.steps li b{display:block;font-weight:700}
+.steps li span{color:var(--sub)}
+.goal p{margin:0;font-size:14px}
+.goal p+p{margin-top:6px}
+
+/* ── 실험대 ── */
+.stage{position:relative;width:100%;aspect-ratio:3/2;border-radius:var(--r2);overflow:hidden;border:1px solid var(--line);background:#cfd3d2;isolation:isolate;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;--u:7px}
+.stage .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}
+.obj{position:absolute;pointer-events:none}
+.obj img{display:block;width:100%;height:100%;-webkit-user-drag:none}
+.obj.glass{mix-blend-mode:multiply}
+.obj.real img{filter:saturate(.95) brightness(.98) contrast(.98)}
+.obj.gone{visibility:hidden;opacity:0}
+.obj.in{animation:settle .6s cubic-bezier(.25,.8,.25,1) both}
+.obj.in.sensor{animation-name:insert}
+@keyframes settle{from{opacity:0;transform:translateY(-6%) scale(.98)}to{opacity:1;transform:none}}
+@keyframes insert{from{opacity:.2;transform:translateY(-22%)}60%{opacity:1}to{transform:none}}
+#o-spinach{z-index:3}
+#o-o2,#o-co2{z-index:4}
+#o-box{z-index:5}
+#o-lamp{z-index:6}
+.stage.lit #o-spinach img{filter:saturate(1.1) brightness(1.1)}
+.shade{position:absolute;z-index:2;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(20,24,28,.32),rgba(20,24,28,.14) 60%,rgba(20,24,28,0));pointer-events:none;transition:opacity .3s}
+.shade.gone{opacity:0}
+
+.light{position:absolute;inset:0;z-index:7;pointer-events:none;opacity:0;transition:opacity .7s}
+.stage.lit .light{opacity:1}
+.light svg{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:screen;filter:blur(4px)}
+.light .panel{position:absolute;height:max(4px, calc(var(--u) * .7));border-radius:4px;transform-origin:0 50%;background:#fffbe8;box-shadow:0 0 calc(var(--u)*1.6) calc(var(--u)*.5) rgba(255,240,180,.9)}
+
+.zone{position:absolute;z-index:9;border:2px dashed rgba(36,86,166,.9);border-radius:var(--r1);background:rgba(240,245,252,.42);padding:0;cursor:pointer;touch-action:manipulation}
+.zone span{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:max(11px, calc(var(--u) * 1.45));font-weight:700;color:var(--pt-h);background:rgba(255,255,255,.94);border-radius:6px;padding:0 7px;line-height:1.6;pointer-events:none}
+.zone.lb-mid span{top:50%;transform:translate(-50%,-50%)}
+.zone.lb-top span{bottom:calc(100% + 4px)}
+.zone.want{border-style:solid;animation:pulse 1.4s ease-in-out infinite}
+.zone.hot{background:rgba(36,86,166,.22);border-style:solid}
+.zone.done,.stage[data-mode="measure"] .zone{display:none}
+@keyframes pulse{50%{background:rgba(36,86,166,.2)}}
+
+.plate{position:absolute;z-index:12;left:2.2%;top:3.4%;display:flex;align-items:center;gap:calc(var(--u)*.9);padding:calc(var(--u)*.75) calc(var(--u)*1.7);background:#1F2B38;color:#fff;border-radius:6px;border:1px solid rgba(255,255,255,.16);box-shadow:0 2px 8px rgba(0,0,0,.28);font-size:max(12px, calc(var(--u) * 1.9));font-weight:700;letter-spacing:.06em;line-height:1.3;pointer-events:none;white-space:nowrap}
+.plate::before{content:"";width:calc(var(--u)*.55);min-width:4px;align-self:stretch;border-radius:2px;background:#7FB069}
+
+.led{position:absolute;z-index:11;width:max(8px, calc(var(--u)*1.05));aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);background:#4B535B;border:1.5px solid rgba(255,255,255,.85);pointer-events:none;display:none}
+.stage[data-mode="measure"] .led{display:block}
+.led.conn{background:#E5483B;animation:blink .8s steps(2,start) infinite}
+.led.on{background:#3DDC74;box-shadow:0 0 calc(var(--u)*.9) #3DDC74}
+@keyframes blink{to{visibility:hidden}}
+
+.clock{position:absolute;z-index:12;right:2.2%;top:3.4%;display:flex;align-items:baseline;gap:6px;background:rgba(20,24,30,.82);color:#fff;border-radius:6px;padding:calc(var(--u)*.6) calc(var(--u)*1.4);font-variant-numeric:tabular-nums;font-size:max(12px, calc(var(--u)*1.9));font-weight:700;line-height:1.3}
+.clock small{font-size:.72em;color:#b9c2cc;font-weight:500}
+.stage[data-mode="build"] .clock{display:none}
+
+.ghost-drag{position:fixed;z-index:200;left:0;top:0;pointer-events:none;transform:translate(-50%,-50%);filter:drop-shadow(0 10px 14px rgba(0,0,0,.28));opacity:.95}
+
+/* ── 2단계: 측정 제어 ── */
+.ctrl{display:grid;grid-template-columns:1fr 1fr auto auto;gap:8px}
+.tg{display:flex;align-items:center;justify-content:space-between;gap:10px;height:54px;padding:0 12px;border:1px solid var(--line);border-radius:var(--r1);background:#fff;cursor:pointer;text-align:left;min-width:0}
+.tg .tx{min-width:0}
+.tg b{display:block;font-size:14px;font-weight:700;line-height:1.25}
+.tg small{display:block;font-size:12px;color:var(--sub);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.knob{flex:none;position:relative;width:46px;height:28px;border-radius:14px;background:#C5CFDA;transition:background .2s}
+.knob::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .2s}
+.tg[aria-checked="true"] .knob{background:var(--ok)}
+.tg[aria-checked="true"] .knob::after{transform:translateX(18px)}
+.tg[aria-checked="true"] small{color:var(--ok)}
+.tg.need{border-color:var(--pt);box-shadow:0 0 0 3px rgba(36,86,166,.14)}
+.spec{height:54px;padding:0 14px;border-radius:var(--r1);background:#EEF2F6;display:flex;flex-direction:column;justify-content:center;white-space:nowrap}
+.spec span{font-size:12px;color:var(--sub);line-height:1.25}
+.spec b{font-size:16px;font-weight:700;line-height:1.3}
+.runrow{display:flex;align-items:center;gap:12px;margin-top:12px}
+.clockbox{flex:1;min-width:0}
+.clockbox .ph{display:block;font-size:13px;font-weight:600;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clockbox .ph.go{color:var(--pt)}
+.clockbox .tm{display:flex;align-items:center;gap:10px}
+.clockbox .tm b{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.3}
+.progress{flex:1;height:6px;background:#E8EDF4;border-radius:3px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--pt)}
+
+/* ── 2단계: 그래프 ── */
+.chart+.chart{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.chart-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.chart-head .nm{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:700;white-space:nowrap}
+.sw{flex:none;width:9px;height:9px;border:2px solid;background:#fff}
+.sw.co2{border-color:var(--co2);border-radius:50%}
+.sw.o2{border-color:var(--o2);border-radius:2px}
+.val{font-variant-numeric:tabular-nums;white-space:nowrap}
+.val b{font-size:28px;font-weight:700;letter-spacing:-.01em;line-height:1.25}
+.val small{font-size:13px;color:var(--sub);margin-left:3px}
+.val.dim b{color:#9AA6B5}
+.chart canvas{display:block;width:100%;height:clamp(150px, calc((100dvh - var(--bar) - 380px) / 2), 240px);margin-top:2px}
+.note{font-size:12px;color:var(--sub);margin:6px 0 0;line-height:1.5}
+
+/* ── 2단계: 탐구 결과 기록 ── */
+.result .head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.result .head .sec{margin:0}
+.lock{font-size:12px;font-weight:600;color:var(--warn)}
+.q{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.q .qt{display:flex;gap:8px;margin:0 0 8px;font-size:15px;font-weight:700;line-height:1.45}
+.q .qt i{font-style:normal;flex:none;width:22px;height:22px;margin-top:1px;border-radius:50%;background:var(--pt);color:#fff;font-size:12px;display:grid;place-items:center}
+.fill{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:5px 0}
+.fill .fl{font-size:14px;font-weight:600;min-width:112px}
+.fill .end{font-size:14px;font-weight:600}
+.choices{display:flex;gap:6px;flex-wrap:wrap}
+.choice{height:40px;padding:0 13px;border:1px solid #CDD6E1;border-radius:var(--r1);background:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.choice[aria-pressed="true"]{border-color:var(--pt);background:#EAF0F9;color:var(--pt)}
+.choice:disabled{cursor:default;color:#A3AEBC;background:#F6F8FB;border-color:#E3E9F2}
+.mark{flex:none;display:none;align-items:center;gap:6px;height:34px;padding:0 13px 0 7px;border-radius:17px;font-style:normal;font-size:16px;font-weight:800;white-space:nowrap;animation:pop .35s cubic-bezier(.2,.9,.3,1.25) both}
+.mark::before{content:"";width:20px;height:20px;border-radius:50%}
+.fill.right .mark::after{content:"정답"}
+.fill.wrong .mark::after{content:"오답"}
+.fill.right .mark{display:inline-flex;background:var(--okbg);color:var(--ok)}
+.fill.right .mark::before{background:var(--ok) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center/13px no-repeat}
+.fill.wrong .mark{display:inline-flex;background:var(--errbg);color:var(--err)}
+.fill.wrong .mark::before{background:var(--err) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M7 7l10 10M17 7L7 17'/%3E%3C/svg%3E") center/12px no-repeat}
+.fill.right .choice[aria-pressed="true"]{border-color:var(--ok);background:var(--okbg);color:var(--ok)}
+.fill.wrong .choice[aria-pressed="true"]{border-color:var(--err);background:var(--errbg);color:var(--err)}
+.checkrow{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+.checkrow .msg{font-size:14px;font-weight:600;color:var(--sub)}
+.checkrow .msg.ok{color:var(--ok)}
+.checkrow .msg.bad{color:var(--err)}
+.explain{margin-top:12px;padding:12px 14px;border-radius:var(--r1);background:var(--okbg);font-size:14px;line-height:1.6}
+.explain b{color:var(--ok)}
+.verdict{display:flex;align-items:center;gap:16px;margin-top:14px;padding:18px 20px;border-radius:var(--r2);background:var(--ok);color:#fff;animation:pop .5s cubic-bezier(.2,.9,.3,1.25) both}
+.verdict .vi{flex:none;width:56px;height:56px;border-radius:50%;background:#fff;color:var(--ok);display:grid;place-items:center}
+.verdict .vi svg{width:32px;height:32px}
+.verdict strong{display:block;font-size:32px;font-weight:800;line-height:1.2;letter-spacing:-.01em}
+.verdict span{display:block;font-size:15px;font-weight:600;opacity:.92;margin-top:2px}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+.result.locked .q{opacity:.55}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:300;background:rgba(20,20,20,.9);color:#fff;font-size:14px;padding:10px 16px;border-radius:var(--r1);max-width:calc(100% - 40px);opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+
+/* 손가락으로 쓰는 화면 */
+@media (pointer:coarse){
+  body{font-size:16px}
+  .btn{height:52px;font-size:16px}
+  .choice{height:44px;padding:0 14px;font-size:15px}
+  .tab{height:44px}
+}
+
+/* 폭이 좁은 화면(세로 태블릿 포함): 1단계는 위아래로 — 준비물 → 실험대 → 탐구 과정 */
+@media (max-width:1023px){
+  #build{grid-template-columns:1fr}
+  #build .stage-wrap{width:100%}
+  .parts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .part{flex-direction:column;align-items:center;text-align:center;gap:4px;min-height:0;padding:8px 6px}
+  .part .ck{position:absolute;margin:0;top:5px;right:5px;width:16px;height:16px}
+  .part.done .ck{background-size:10px}
+  .part{position:relative}
+  .pfoot{display:flex;align-items:center;gap:12px;margin-top:10px}
+  .pfoot .hint{flex:1;margin:0}
+  .pfoot .btn{width:auto;margin:0;flex:none}
+  .col-guide{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+  .col-guide .go{grid-column:1/-1}
+}
+/* 세로 태블릿: 2단계는 좌우 배치 그대로, 실험 칸을 조금 좁게 */
+@media (orientation:portrait) and (min-width:600px){
+  #measure{grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:12px;padding-left:12px;padding-right:12px}
+  #measure .stage-wrap{width:100%}
+  #measure .stage-title{font-size:15px}
+  .ctrl{grid-template-columns:1fr 1fr}
+  .runrow{flex-wrap:wrap}
+  .runrow .clockbox{flex-basis:100%}
+  .runrow .btn{flex:1}
+  .chart canvas{height:200px}
+  .fill .fl{min-width:0;flex-basis:100%}
+}
+/* 휴대폰(세로): 전부 위아래로 */
+@media (max-width:599px), (max-width:767px) and (orientation:portrait){
+  :root{--bar:auto}
+  .appbar{height:auto;flex-wrap:wrap;gap:6px;padding:8px 12px}
+  .appbar h1{font-size:15px;flex-basis:100%}
+  .appbar .sp{display:none}
+  .tabs{flex:1}
+  .tab{flex:1;padding:0 6px;font-size:13px}
+  .tab b{margin-right:3px}
+  .screen{padding:10px}
+  #measure{grid-template-columns:1fr;height:auto;padding-bottom:10px}
+  #measure .col{height:auto;overflow:visible;padding-bottom:0}
+  .stage-wrap{width:100%!important}
+  .parts{gap:6px}
+  .part b{font-size:12px}
+  .part small{display:none}
+  .col-guide{grid-template-columns:1fr}
+  .ctrl{grid-template-columns:1fr 1fr}
+  .runrow{flex-wrap:wrap}
+  .runrow .clockbox{flex-basis:100%}
+  .runrow .btn{flex:1}
+  .stage-title{font-size:16px}
+  .chart canvas{height:190px}
+  .fill .fl{min-width:0;flex-basis:100%}
+  .val b{font-size:24px}
+}
+/* 높이가 낮은 가로 화면(가로로 든 휴대폰) */
+@media (max-height:520px) and (min-width:600px) and (orientation:landscape){
+  :root{--bar:52px}
+  .tab{height:36px}
+  #measure .stage-wrap{--below:0px}
+  #build .stage-wrap{--below:60px}
+}
+@media (prefers-reduced-motion:reduce){
+  .obj.in,.zone.want,.led.conn,.mark,.verdict{animation:none}
+}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <h1>광합성에 필요한 물질과 산물 확인하기</h1>
+  <span class="sp"></span>
+  <nav class="tabs" role="tablist" aria-label="실험 단계">
+    <button class="tab" role="tab" id="tab-build" data-tab="build" aria-selected="true" type="button"><b>1단계</b>실험 장치 구성</button>
+    <button class="tab locked" role="tab" id="tab-measure" data-tab="measure" aria-selected="false" type="button"><b>2단계</b>측정 및 분석</button>
+  </nav>
+</header>
+
+<!-- ───────── 1단계: 실험 장치 구성 ───────── -->
+<main class="screen on" id="build" role="tabpanel" aria-labelledby="tab-build">
+  <aside class="col col-parts">
+    <div class="card">
+      <p class="sec">준비물 설치</p>
+      <div class="parts" id="parts">
+        <button class="part" type="button" data-part="spinach"><span class="th"><img src="assets/spinach.webp" alt="" draggable="false"></span><span class="tx"><b>시금치 잎 4~5장</b><small>겹치지 않게 펴서 넣기</small></span><i class="ck"></i></button>
+        <button class="part" type="button" data-part="co2"><span class="th"><img class="tilt" src="assets/co2-sensor.webp" alt="" draggable="false"></span><span class="tx"><b>이산화 탄소 센서</b><small>CO₂ 농도 측정</small></span><i class="ck"></i></button>
+        <button class="part" type="button" data-part="o2"><span class="th"><img class="tilt" src="assets/o2-sensor.webp" alt="" draggable="false"></span><span class="tx"><b>산소 센서</b><small>O₂ 농도 측정</small></span><i class="ck"></i></button>
+        <button class="part" type="button" data-part="lamp"><span class="th"><img src="assets/lamp.webp" alt="" draggable="false"></span><span class="tx"><b>LED 전등</b><small>빛 공급</small></span><i class="ck"></i></button>
+      </div>
+      <div class="pfoot">
+        <p class="hint">끌어다 놓거나, 준비물을 누른 뒤 실험대의 설치 위치를 눌러도 됩니다.</p>
+        <button class="btn" id="buildReset" type="button">1단계 다시 하기</button>
+      </div>
+    </div>
+  </aside>
+
+  <section class="col col-stage">
+    <h2 class="stage-title">그림과 같은 위치에 실험 장치를 설치하세요.</h2>
+    <div class="stage-wrap" id="host-build">
+      <div class="stage" id="stage" data-mode="build" aria-label="실험대">
+        <img class="bg" src="assets/bg-lab.webp" alt="" draggable="false">
+        <span class="shade" id="sh-box"></span>
+        <span class="shade gone" id="sh-lamp"></span>
+
+        <div class="obj real gone" id="o-spinach"><img src="assets/spinach.webp" alt="" draggable="false"></div>
+        <div class="obj real sensor gone" id="o-o2"><img src="assets/o2-sensor.webp" alt="" draggable="false"></div>
+        <div class="obj real sensor gone" id="o-co2"><img src="assets/co2-sensor.webp" alt="" draggable="false"></div>
+        <div class="obj glass" id="o-box" aria-label="투명 밀폐 용기"><img src="assets/box.webp" alt="" draggable="false"></div>
+        <div class="obj real gone" id="o-lamp"><img src="assets/lamp.webp" alt="" draggable="false"></div>
+
+        <div class="light" aria-hidden="true">
+          <svg viewBox="0 0 150 100" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="beam" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#fff5d0" stop-opacity=".85"/>
+                <stop offset=".6" stop-color="#ffecb3" stop-opacity=".32"/>
+                <stop offset="1" stop-color="#ffe8a0" stop-opacity=".06"/>
+              </linearGradient>
+              <radialGradient id="pool" cx=".5" cy=".5" r=".5">
+                <stop offset="0" stop-color="#fff1c0" stop-opacity=".5"/>
+                <stop offset="1" stop-color="#fff1c0" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <polygon id="conePoly" fill="url(#beam)"/>
+            <ellipse id="poolEl" fill="url(#pool)"/>
+          </svg>
+          <i class="panel" id="panel"></i>
+        </div>
+
+        <button class="zone lb-mid" type="button" data-zone="spinach"><span>시금치 잎</span></button>
+        <button class="zone lb-top" type="button" data-zone="co2"><span>CO₂ 센서</span></button>
+        <button class="zone lb-top" type="button" data-zone="o2"><span>산소 센서</span></button>
+        <button class="zone lb-mid" type="button" data-zone="lamp"><span>LED 전등</span></button>
+
+        <i class="led" id="led-o2"></i>
+        <i class="led" id="led-co2"></i>
+        <div class="clock" id="clock"><span id="clockText">0분</span><small>/ 10분</small></div>
+      </div>
+    </div>
+    <div class="status" id="buildStatus">장치를 4개 모두 설치하세요. <span class="cnt">(0/4)</span></div>
+  </section>
+
+  <aside class="col col-guide">
+    <div class="card goal">
+      <p class="sec">탐구 목표</p>
+      <p>측정 결과를 통해 광합성에 필요한 물질과 광합성 결과 생성되는 물질을 추론합니다.</p>
+    </div>
+    <div class="card">
+      <p class="sec">탐구 과정</p>
+      <ol class="steps">
+        <li><b>시금치 넣기</b><span>투명 밀폐 용기 안에 시금치 잎 4~5장을 최대한 겹치지 않게 펴서 넣습니다.</span></li>
+        <li><b>센서 설치</b><span>이산화 탄소 센서와 산소 센서를 밀폐 용기에 설치하고 전원을 켭니다.</span></li>
+        <li><b>측정 설정</b><span>10분 동안 1분 간격으로 두 기체의 농도를 측정합니다.</span></li>
+        <li><b>빛 비추기</b><span>LED 전등을 켜고 농도 변화를 그래프로 확인합니다.</span></li>
+      </ol>
+    </div>
+    <div class="go">
+      <button class="btn primary block" id="goMeasure" type="button" disabled>2단계로 이동</button>
+    </div>
+  </aside>
+</main>
+
+<!-- ───────── 2단계: 측정 및 분석 ───────── -->
+<main class="screen" id="measure" role="tabpanel" aria-labelledby="tab-measure">
+  <section class="col col-exp">
+    <h2 class="stage-title">LED 빛을 비추면서 CO₂와 O₂ 농도 변화를 측정해 보세요.</h2>
+    <div class="stage-wrap" id="host-measure"></div>
+    <div class="card">
+      <div class="ctrl">
+        <button class="tg" id="sensorToggle" type="button" role="switch" aria-checked="false"><span class="tx"><b>센서 전원</b><small id="sensorSt">꺼짐</small></span><i class="knob"></i></button>
+        <button class="tg" id="lightToggle" type="button" role="switch" aria-checked="false"><span class="tx"><b>LED 전등</b><small id="lightSt">꺼짐</small></span><i class="knob"></i></button>
+        <div class="spec"><span>측정 간격</span><b>1분</b></div>
+        <div class="spec"><span>측정 시간</span><b>10분</b></div>
+      </div>
+      <div class="runrow">
+        <div class="clockbox">
+          <span class="ph" id="phase">센서 전원과 LED 전등을 켜세요.</span>
+          <span class="tm"><b id="timer">00:00</b><span class="progress"><i id="bar"></i></span></span>
+        </div>
+        <button class="btn primary" id="startBtn" type="button" disabled>측정 시작</button>
+        <button class="btn" id="measureReset" type="button">2단계 다시 하기</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="col col-data">
+    <div class="card" id="chartCard">
+      <p class="sec">측정 결과 그래프</p>
+      <div class="chart">
+        <div class="chart-head"><span class="nm"><i class="sw co2"></i>이산화 탄소 농도</span><span class="val" id="valCo2"><b id="vCo2">--</b><small>ppm</small></span></div>
+        <canvas id="cCo2" aria-label="이산화 탄소 농도 그래프"></canvas>
+      </div>
+      <div class="chart">
+        <div class="chart-head"><span class="nm"><i class="sw o2"></i>산소 농도</span><span class="val" id="valO2"><b id="vO2">--</b><small>%</small></span></div>
+        <canvas id="cO2" aria-label="산소 농도 그래프"></canvas>
+      </div>
+      <p class="note">1분마다 측정한 값을 점으로 나타냅니다. 산소는 공기 중에 약 20.9% 있어 변화 폭이 작으므로 세로축 한 칸을 0.02%로 확대했습니다. 실제 10분 측정을 화면에서는 약 30초로 줄여 보여 줍니다.</p>
+    </div>
+
+    <div class="card result locked" id="resultCard">
+      <div class="head"><p class="sec">탐구 결과 기록</p><span class="lock" id="lockNote">측정을 마치면 기록할 수 있습니다.</span></div>
+      <div class="q">
+        <p class="qt"><i>1</i>측정 결과, 시간이 지나면서 두 기체의 농도는 어떻게 변했나요?</p>
+        <div class="fill" data-q="co2"><span class="fl">이산화 탄소 농도</span>
+          <span class="choices"><button class="choice" type="button" data-v="up">높아진다</button><button class="choice" type="button" data-v="down">낮아진다</button><button class="choice" type="button" data-v="same">변화 없다</button></span><i class="mark"></i></div>
+        <div class="fill" data-q="o2"><span class="fl">산소 농도</span>
+          <span class="choices"><button class="choice" type="button" data-v="up">높아진다</button><button class="choice" type="button" data-v="down">낮아진다</button><button class="choice" type="button" data-v="same">변화 없다</button></span><i class="mark"></i></div>
+      </div>
+      <div class="q">
+        <p class="qt"><i>2</i>실험 결과를 바탕으로 알맞은 물질을 고르세요.</p>
+        <div class="fill" data-q="need"><span class="fl">광합성에 필요한 물질은</span>
+          <span class="choices"><button class="choice" type="button" data-v="co2">이산화 탄소</button><button class="choice" type="button" data-v="o2">산소</button></span><i class="mark"></i></div>
+        <div class="fill" data-q="prod"><span class="fl">광합성 산물은</span>
+          <span class="choices"><button class="choice" type="button" data-v="co2">이산화 탄소</button><button class="choice" type="button" data-v="o2">산소</button></span><i class="mark"></i></div>
+      </div>
+      <div class="checkrow">
+        <button class="btn primary" id="checkBtn" type="button" disabled>답 확인</button>
+        <span class="msg" id="checkMsg"></span>
+      </div>
+      <div class="verdict" id="verdict" role="status" hidden>
+        <span class="vi" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+        <div><strong>정답입니다</strong><span>4문제를 모두 맞혔습니다.</span></div>
+      </div>
+      <div class="explain" id="explain" hidden>빛을 받은 시금치 잎은 밀폐 용기 속 <b>이산화 탄소를 흡수</b>하여 광합성에 쓰고, 광합성 결과 만들어진 <b>산소를 내보냅니다.</b> 그래서 이산화 탄소 농도는 낮아지고 산소 농도는 높아졌습니다.</div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ───────── 배치 값 (실험대 폭·높이에 대한 %) ─────────
+   실험대는 3:2 고정. 물건은 가운데 x, 바닥선 b, 폭 w로 두고 높이는 그림 비율로 정한다.
+   센서는 뚜껑 고무 구멍(용기 그림 안의 위치)에 관이 시작되는 부분이 오도록 맞춘다. */
+const L = {
+  box:     { x:38, b:86.5, w:42 },
+  hole:    { co2:[.3179,.137], o2:[.674,.137] },   /* 뚜껑 고무 구멍: 이산화 탄소 센서 왼쪽 · 산소 센서 오른쪽 (assets.py가 잰 값) */
+  spinach: { x:38, b:82.9, w:26, ar:.24 },         /* 위에서 찍은 잎 사진이라 세로를 눌러 바닥에 누운 모양으로 */
+  lamp:    { x:69, b:87.5, w:34 },
+  head:    { a:[.023,.068], b:[.546,.183] },       /* LED 발광면 양 끝: 전등 그림 안의 위치 */
+  sensor:  { w:3.1, tube:{ co2:.63, o2:.78 }, btn:{ co2:.233, o2:.244 } }
+};
+const AR = { box:.4511, spinach:.4678, lamp:.8411, co2:900/114, o2:900/140 };
+const KEYS = ['spinach','co2','o2','lamp'];
+const NAME = { spinach:'시금치 잎', o2:'산소 센서', co2:'이산화 탄소 센서', lamp:'LED 전등' };
+const TOPIC = { spinach:'시금치 잎은', o2:'산소 센서는', co2:'이산화 탄소 센서는', lamp:'LED 전등은' };
+const PHONE = '(max-width:599px), (max-width:767px) and (orientation:portrait)';
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const stage = $('#stage');
+const OBJ = { box:$('#o-box') }, ZONE = {}, PART = {};
+KEYS.forEach(k => { OBJ[k] = $('#o-'+k); ZONE[k] = $(`.zone[data-zone="${k}"]`); PART[k] = $(`.part[data-part="${k}"]`); });
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ───────── 배치 ───────── */
+function rect(k){
+  if(k === 'co2' || k === 'o2'){
+    const B = rect('box'), [fx, fy] = L.hole[k], w = L.sensor.w, h = w * AR[k] * 1.5;
+    const cx = B.l + fx * B.w, hy = B.t + fy * B.h;
+    return { l: cx - w/2, t: hy - L.sensor.tube[k] * h, w, h };
+  }
+  const p = L[k], h = p.w * (p.ar || AR[k]) * 1.5;
+  return { l: p.x - p.w/2, t: p.b - h, w: p.w, h };
+}
+function put(el, r){
+  el.style.left = r.l + '%'; el.style.top = r.t + '%';
+  el.style.width = r.w + '%'; el.style.height = r.h + '%';
+}
+function zoneRect(k){
+  const r = rect(k);
+  if(k === 'co2' || k === 'o2'){
+    const w = 6.4, B = rect('box');
+    return { l: r.l + r.w/2 - w/2, t: r.t, w, h: (B.t + B.h * L.hole[k][1]) - r.t + 2 };
+  }
+  return { l: r.l - 1, t: r.t - 1.5, w: r.w + 2, h: r.h + 3 };
+}
+function layout(){
+  put(OBJ.box, rect('box'));
+  KEYS.forEach(k => { put(OBJ[k], rect(k)); put(ZONE[k], zoneRect(k)); });
+  const B = rect('box'), sb = $('#sh-box');
+  sb.style.left = (B.l + B.w/2) + '%'; sb.style.top = (B.t + B.h - .6) + '%';
+  sb.style.width = (B.w * 1.06) + '%'; sb.style.height = '4%';
+  const lr = rect('lamp'), sl = $('#sh-lamp');
+  sl.style.left = (lr.l + lr.w * .74) + '%'; sl.style.top = (lr.t + lr.h - .5) + '%';
+  sl.style.width = (lr.w * .5) + '%'; sl.style.height = '2.6%';
+  ['o2','co2'].forEach(k => {
+    const r = rect(k), led = $('#led-'+k);
+    led.style.left = (r.l + r.w/2) + '%'; led.style.top = (r.t + L.sensor.btn[k] * r.h) + '%';
+  });
+  drawBeam();
+}
+function drawBeam(){
+  const lr = rect('lamp'), B = rect('box');
+  const P = f => [lr.l + f[0] * lr.w, lr.t + f[1] * lr.h];        /* 실험대 % */
+  const a = P(L.head.a), b = P(L.head.b);
+  const S = p => [p[0] * 1.5, p[1]];                                 /* svg 좌표(150×100) */
+  const floorY = B.t + B.h * .92;
+  const pts = [S(a), S(b), S([B.l + B.w * .98, floorY]), S([B.l + B.w * .02, floorY])];
+  $('#conePoly').setAttribute('points', pts.map(p => p.join(',')).join(' '));
+  const g = $('#beam'), mid = S([(a[0]+b[0])/2, (a[1]+b[1])/2]), to = S([B.l + B.w/2, floorY]);
+  g.setAttribute('x1', mid[0]); g.setAttribute('y1', mid[1]); g.setAttribute('x2', to[0]); g.setAttribute('y2', to[1]);
+  const pool = $('#poolEl');
+  pool.setAttribute('cx', to[0]); pool.setAttribute('cy', floorY); pool.setAttribute('rx', B.w * 1.5 * .62); pool.setAttribute('ry', 5);
+  /* 발광면: 실험대 px로 길이·각도를 잰다 */
+  const W = stage.clientWidth, H = stage.clientHeight, panel = $('#panel');
+  const ax = a[0]/100*W, ay = a[1]/100*H, bx = b[0]/100*W, by = b[1]/100*H;
+  panel.style.left = ax + 'px'; panel.style.top = ay + 'px';
+  panel.style.width = Math.hypot(bx-ax, by-ay) + 'px';
+  panel.style.transform = `rotate(${Math.atan2(by-ay, bx-ax)}rad)`;
+}
+new ResizeObserver(() => { stage.style.setProperty('--u', stage.clientWidth / 100 + 'px'); drawBeam(); drawChart(); }).observe(stage);
+
+/* ───────── 1단계: 설치 ───────── */
+const installed = new Set();
+let selected = null;
+
+function select(k){
+  selected = k;
+  KEYS.forEach(q => { PART[q].classList.toggle('sel', q === k); ZONE[q].classList.toggle('want', q === k); });
+}
+function install(k){
+  if(installed.has(k)) return;
+  installed.add(k);
+  const o = OBJ[k];
+  o.classList.remove('gone', 'in'); void o.offsetWidth; o.classList.add('in');
+  ZONE[k].classList.add('done');
+  PART[k].classList.add('done');
+  PART[k].setAttribute('aria-disabled', 'true');
+  if(k === 'lamp') $('#sh-lamp').classList.remove('gone');
+  if(selected === k) select(null);
+  updateBuild();
+}
+function updateBuild(){
+  const n = installed.size, st = $('#buildStatus');
+  st.classList.toggle('ok', n === 4);
+  st.innerHTML = n === 4 ? '설치를 마쳤습니다. 2단계로 이동해 측정하세요.' : `장치를 4개 모두 설치하세요. <span class="cnt">(${n}/4)</span>`;
+  $('#goMeasure').disabled = n !== 4;
+  $('#tab-measure').classList.toggle('locked', n !== 4);
+}
+
+/* 끌어서 놓기 — 마우스·손가락 공용(포인터 이벤트) */
+let drag = null, ghost = null;
+function makeGhost(k){
+  ghost = document.createElement('img');
+  ghost.className = 'ghost-drag'; ghost.src = OBJ[k].querySelector('img').src; ghost.alt = '';
+  const r = rect(k), W = stage.clientWidth, H = stage.clientHeight;
+  const scale = matchMedia(PHONE).matches ? 1.25 : 1;
+  ghost.style.width = Math.max(18, r.w/100*W*scale) + 'px';
+  ghost.style.height = Math.max(40, r.h/100*H*scale) + 'px';
+  if(k === 'spinach' || k === 'lamp'){ ghost.style.height = 'auto'; ghost.style.width = Math.max(90, r.w/100*W*scale) + 'px'; }
+  document.body.appendChild(ghost);
+}
+function moveGhost(x, y){ if(ghost) ghost.style.translate = `${x}px ${y}px`; }
+function dropGhost(){ if(ghost){ ghost.remove(); ghost = null; } KEYS.forEach(k => ZONE[k].classList.remove('hot')); }
+function zoneAt(x, y){
+  const s = stage.getBoundingClientRect();
+  if(stage.dataset.mode !== 'build') return null;
+  const pad = Math.max(18, s.width * .035);
+  let best = null, bestD = Infinity;
+  KEYS.forEach(k => {
+    if(installed.has(k)) return;
+    const z = zoneRect(k);
+    const l = s.left + z.l/100*s.width - pad, t = s.top + z.t/100*s.height - pad;
+    const r = l + z.w/100*s.width + pad*2, b = t + z.h/100*s.height + pad*2;
+    if(x >= l && x <= r && y >= t && y <= b){
+      const d = Math.hypot(x - (l+r)/2, y - (t+b)/2);
+      if(d < bestD){ bestD = d; best = k; }
+    }
+  });
+  return best;
+}
+function inStage(x, y){ const s = stage.getBoundingClientRect(); return x >= s.left && x <= s.right && y >= s.top && y <= s.bottom; }
+function dropAt(k, x, y){
+  const z = zoneAt(x, y);
+  if(z === k){ install(k); return; }
+  if(z) toast(`그 자리는 ${NAME[z]} 자리입니다.`);
+  else if(inStage(x, y)) toast(`${TOPIC[k]} 점선으로 표시된 자리에 놓으세요.`);
+  select(null);
+}
+KEYS.forEach(k => {
+  const p = PART[k];
+  p.addEventListener('pointerdown', e => {
+    if(installed.has(k) || drag || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    drag = { k, id: e.pointerId, sx: e.clientX, sy: e.clientY, on: false };
+    try{ p.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  p.addEventListener('pointermove', e => {
+    if(!drag || drag.id !== e.pointerId) return;
+    if(!drag.on && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 6){ drag.on = true; select(k); makeGhost(k); }
+    if(drag.on){
+      e.preventDefault();
+      moveGhost(e.clientX, e.clientY);
+      const z = zoneAt(e.clientX, e.clientY);
+      KEYS.forEach(q => ZONE[q].classList.toggle('hot', q === z));
+    }
+  });
+  p.addEventListener('pointerup', e => {
+    if(!drag || drag.id !== e.pointerId) return;
+    const d = drag; drag = null;
+    if(d.on){ dropGhost(); dropAt(k, e.clientX, e.clientY); }
+    else if(!installed.has(k)) select(selected === k ? null : k);
+  });
+  p.addEventListener('pointercancel', () => { drag = null; dropGhost(); });
+  p.addEventListener('click', e => { if(e.detail === 0 && !installed.has(k)) select(selected === k ? null : k); });   /* 키보드 */
+  p.addEventListener('contextmenu', e => e.preventDefault());
+  ZONE[k].addEventListener('click', () => {
+    if(!selected){ toast('준비물 목록에서 설치할 장치를 먼저 고르세요.'); return; }
+    if(selected === k) install(k);
+    else toast(`그 자리는 ${NAME[k]} 자리입니다.`);
+  });
+});
+stage.addEventListener('contextmenu', e => e.preventDefault());
+
+/* ───────── 단계 탭 ───────── */
+function showTab(id){
+  if(id === 'measure' && installed.size < 4){ toast('1단계에서 실험 장치 4개를 모두 설치하세요.'); return; }
+  $$('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === id)));
+  $$('.screen').forEach(s => s.classList.toggle('on', s.id === id));
+  $('#host-' + id).appendChild(stage);
+  stage.dataset.mode = id;
+  window.scrollTo({ top: 0 });
+  requestAnimationFrame(() => { layout(); drawChart(); });
+}
+$$('.tab').forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+$('#goMeasure').addEventListener('click', () => showTab('measure'));
+
+/* ───────── 2단계: 측정 ─────────
+   밀폐 용기 속 이산화 탄소는 광합성으로 줄고, 줄어든 만큼(몰 수 1:1) 산소가 는다.
+   1ppm = 0.0001% 이므로 이산화 탄소 700ppm 감소는 산소 0.07% 증가다. */
+const CO2_START = 1180, CO2_DROP = 820, TAU = 5.0, LAG = 0.35, O2_START = 20.90;
+function model(tMin){
+  const te = Math.max(0, tMin - LAG);
+  const ramp = 1 - Math.exp(-te / 0.6);
+  const drop = CO2_DROP * (1 - Math.exp(-te / TAU)) * ramp;
+  return { co2: CO2_START - drop, o2: O2_START + drop / 10000 };
+}
+let seed = 7;
+function rand(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+function noise(a){ return (rand() + rand() - 1) * a; }
+const fmt = v => Math.round(v).toLocaleString('ko-KR');
+const pct = v => v.toFixed(2);
+
+const SEC_PER_MIN = 3;           /* 1분 = 3초 → 10분 = 30초 */
+let sensor = 'off', connTimer = null, light = false, run = null, data = [], done = false;
+
+function setPhase(){
+  const ph = $('#phase');
+  let t = '', go = false;
+  if(run){ t = '광합성 진행 중 · 1분마다 측정합니다'; go = true; }
+  else if(done) t = '측정 완료 · 그래프를 보고 탐구 결과를 기록하세요';
+  else if(sensor === 'off' && !light) t = '센서 전원과 LED 전등을 켜세요.';
+  else if(sensor === 'off') t = '센서 전원을 켜세요.';
+  else if(sensor === 'conn') t = '센서 연결 중…';
+  else if(!light) t = 'LED 전등을 켜세요.';
+  else { t = '측정 준비 완료'; go = true; }
+  ph.textContent = t; ph.classList.toggle('go', go);
+}
+function renderMeasure(){
+  const sT = $('#sensorToggle'), lT = $('#lightToggle');
+  sT.setAttribute('aria-checked', String(sensor !== 'off'));
+  $('#sensorSt').textContent = sensor === 'off' ? '꺼짐' : sensor === 'conn' ? '연결 중…' : '켜짐 · 연결됨';
+  lT.setAttribute('aria-checked', String(light));
+  $('#lightSt').textContent = light ? '켜짐' : '꺼짐';
+  const idle = !run && !done;
+  sT.classList.toggle('need', idle && sensor === 'off');
+  lT.classList.toggle('need', idle && sensor !== 'off' && !light);
+  stage.classList.toggle('lit', light);
+  ['o2','co2'].forEach(k => { const led = $('#led-'+k); led.classList.toggle('conn', sensor === 'conn'); led.classList.toggle('on', sensor === 'on'); });
+  const sb = $('#startBtn');
+  sb.disabled = !!run || sensor !== 'on' || !light;
+  sb.textContent = run ? '측정 중…' : done ? '다시 측정' : '측정 시작';
+  setPhase();
+  const rc = $('#resultCard');
+  rc.classList.toggle('locked', !done);
+  $('#lockNote').hidden = done;
+  $$('.choice').forEach(b => b.disabled = !done);
+  updateCheckBtn();
+  updateMeters();
+}
+$('#sensorToggle').addEventListener('click', () => {
+  if(run){ toast('측정하는 동안에는 센서를 끌 수 없습니다.'); return; }
+  clearTimeout(connTimer);
+  if(sensor === 'off'){
+    sensor = 'conn';
+    connTimer = setTimeout(() => { sensor = 'on'; renderMeasure(); }, 900);
+  }else sensor = 'off';
+  renderMeasure();
+});
+$('#lightToggle').addEventListener('click', () => {
+  if(run){ toast('측정하는 동안에는 전등을 끄지 마세요.'); return; }
+  light = !light; renderMeasure();
+});
+
+function startRun(){
+  if(run || sensor !== 'on' || !light) return;
+  data = []; done = false;
+  run = { last: performance.now(), simMin: 0, nextMin: 0 };
+  clearMarks();
+  renderMeasure();
+  requestAnimationFrame(tick);
+}
+function sample(t){ const m = model(t); return { t, co2: m.co2 + noise(5), o2: m.o2 + noise(0.003) }; }
+function tick(now){
+  if(!run) return;
+  const dt = Math.min(1, (now - run.last) / 1000);
+  run.last = now;
+  run.simMin = Math.min(10, run.simMin + dt / SEC_PER_MIN);
+  while(run.nextMin <= 10 && run.nextMin <= run.simMin + 1e-9){ data.push(sample(run.nextMin)); run.nextMin++; }
+  updateClock(run.simMin);
+  updateMeters();
+  drawChart();
+  if(run.simMin >= 10){ finish(); return; }
+  requestAnimationFrame(tick);
+}
+function finish(){
+  run = null; done = true;
+  renderMeasure(); drawChart();
+  if(matchMedia(PHONE).matches){
+    toast('측정이 끝났습니다. 그래프 밑에 탐구 결과를 기록하세요.');
+  }else{
+    toast('측정이 끝났습니다. 그래프 밑에 탐구 결과를 기록하세요.');
+    const col = $('.col-data'), rc = $('#resultCard');
+    const hidden = rc.getBoundingClientRect().top - col.getBoundingClientRect().bottom + 120;
+    if(hidden > 0) col.scrollBy({ top: hidden, behavior: 'smooth' });
+  }
+}
+function updateClock(m){
+  const whole = Math.floor(m + 1e-9), sec = Math.floor(m * 60 + 1e-6);
+  $('#clockText').textContent = whole + '분';
+  $('#timer').textContent = String(Math.floor(sec/60)).padStart(2,'0') + ':' + String(sec % 60).padStart(2,'0');
+  $('#bar').style.width = (m / 10 * 100) + '%';
+}
+function nowMin(){ return run ? run.simMin : (done ? 10 : 0); }
+function updateMeters(){
+  const on = sensor === 'on', m = model(nowMin());
+  const last = done && data.length ? data[data.length-1] : null;
+  $('#vCo2').textContent = on ? fmt(last ? last.co2 : m.co2 + noise(4)) : '--';
+  $('#vO2').textContent = on ? pct(last ? last.o2 : m.o2 + noise(0.002)) : '--';
+  $('#valCo2').classList.toggle('dim', !run && !done);
+  $('#valO2').classList.toggle('dim', !run && !done);
+}
+setInterval(() => { if(!run && !done) updateMeters(); }, 600);
+$('#startBtn').addEventListener('click', startRun);
+
+/* ───────── 그래프: 이산화 탄소(위) · 산소(아래) 따로 ───────── */
+const CH = {
+  co2: { cv:$('#cCo2'), min:200,   max:1400,  step:200,  color:'#2456A6', label:fmt, unit:'(ppm)' },
+  o2:  { cv:$('#cO2'),  min:20.88, max:21.00, step:0.02, color:'#1D7A4D', label:pct, unit:'(%)' }
+};
+function drawOne(k){
+  const c = CH[k], cv = c.cv, dpr = Math.min(window.devicePixelRatio || 1, 3), w = cv.clientWidth, h = cv.clientHeight;
+  if(!w || !h) return;
+  if(cv.width !== Math.round(w*dpr) || cv.height !== Math.round(h*dpr)){ cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr); }
+  const x = cv.getContext('2d');
+  x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,w,h);
+  const padL = 48, padR = 14, padT = 22, padB = 24, pw = w - padL - padR, ph = h - padT - padB;
+  const X = t => padL + t/10 * pw;
+  const Y = v => padT + (1 - (v - c.min) / (c.max - c.min)) * ph;
+  const n = Math.round((c.max - c.min) / c.step), every = ph / n < 18 ? 2 : 1;
+  x.font = '11px "Pretendard Variable", Pretendard, sans-serif';
+  x.textBaseline = 'middle';
+  for(let i = 0; i <= n; i++){
+    const yy = Math.round(padT + ph - i * ph / n) + .5;
+    x.strokeStyle = i === 0 ? '#C9D3E0' : '#EEF2F7'; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(padL, yy); x.lineTo(padL + pw, yy); x.stroke();
+    if(i % every === 0){ x.fillStyle = '#64748B'; x.textAlign = 'right'; x.fillText(c.label(c.min + i*c.step), padL - 6, yy); }
+  }
+  x.textAlign = 'right'; x.textBaseline = 'top'; x.fillStyle = c.color;
+  x.font = '600 11px "Pretendard Variable", Pretendard, sans-serif';
+  x.fillText(c.unit, padL - 6, 0);
+  x.font = '11px "Pretendard Variable", Pretendard, sans-serif';
+  x.textAlign = 'center'; x.fillStyle = '#64748B';
+  const tEvery = pw / 10 < 24 ? 2 : 1;
+  for(let t = 0; t <= 10; t++){
+    const xx = Math.round(X(t)) + .5;
+    if(t > 0){ x.strokeStyle = '#F2F5F9'; x.beginPath(); x.moveTo(xx, padT); x.lineTo(xx, padT + ph); x.stroke(); }
+    if(t % tEvery === 0) x.fillText(t === 10 ? '10분' : String(t), xx - (t === 10 ? 4 : 0), padT + ph + 7);
+  }
+  if(run){
+    const xx = X(run.simMin);
+    x.strokeStyle = 'rgba(100,116,139,.5)'; x.setLineDash([3,3]);
+    x.beginPath(); x.moveTo(xx, padT); x.lineTo(xx, padT + ph); x.stroke(); x.setLineDash([]);
+  }
+  if(!data.length) return;
+  x.strokeStyle = c.color; x.lineWidth = 2; x.lineJoin = 'round';
+  x.beginPath();
+  data.forEach((d, i) => { const px = X(d.t), py = Y(d[k]); i ? x.lineTo(px, py) : x.moveTo(px, py); });
+  x.stroke();
+  data.forEach(d => {
+    const px = X(d.t), py = Y(d[k]);
+    x.beginPath();
+    if(k === 'co2') x.arc(px, py, 3.8, 0, Math.PI*2); else x.rect(px - 3.4, py - 3.4, 6.8, 6.8);
+    x.fillStyle = '#fff'; x.fill(); x.lineWidth = 2; x.strokeStyle = c.color; x.stroke();
+  });
+}
+function drawChart(){ drawOne('co2'); drawOne('o2'); }
+new ResizeObserver(drawChart).observe($('#chartCard'));
+
+/* ───────── 탐구 결과 기록 ───────── */
+const ANSWER = { co2:'down', o2:'up', need:'co2', prod:'o2' };
+const picked = {};
+$$('.fill').forEach(f => {
+  f.querySelectorAll('.choice').forEach(b => b.addEventListener('click', () => {
+    if(!done) return;
+    picked[f.dataset.q] = b.dataset.v;
+    f.querySelectorAll('.choice').forEach(c => c.setAttribute('aria-pressed', String(c === b)));
+    f.classList.remove('right', 'wrong');
+    $('#checkMsg').textContent = ''; $('#checkMsg').className = 'msg';
+    $('#verdict').hidden = true; $('#explain').hidden = true;
+    updateCheckBtn();
+  }));
+});
+function updateCheckBtn(){ $('#checkBtn').disabled = !done || Object.keys(ANSWER).some(q => !picked[q]); }
+$('#checkBtn').addEventListener('click', () => {
+  let right = 0;
+  $$('.fill').forEach(f => {
+    const ok = picked[f.dataset.q] === ANSWER[f.dataset.q];
+    f.classList.toggle('right', ok); f.classList.toggle('wrong', !ok);
+    if(ok) right++;
+  });
+  const msg = $('#checkMsg'), all = right === 4;
+  msg.textContent = all ? '' : `4개 중 ${right}개를 맞혔습니다. 오답을 다시 골라 보세요.`;
+  msg.className = 'msg ' + (all ? 'ok' : 'bad');
+  $('#verdict').hidden = !all;
+  $('#explain').hidden = !all;
+  if(all) requestAnimationFrame(() => $('#explain').scrollIntoView({ block:'nearest', behavior:'smooth' }));
+});
+function clearMarks(){
+  $$('.fill').forEach(f => f.classList.remove('right', 'wrong'));
+  $('#checkMsg').textContent = ''; $('#checkMsg').className = 'msg';
+  $('#verdict').hidden = true; $('#explain').hidden = true;
+}
+function clearAnswers(){
+  Object.keys(picked).forEach(q => delete picked[q]);
+  $$('.choice').forEach(c => c.setAttribute('aria-pressed', 'false'));
+  clearMarks();
+}
+
+/* ───────── 다시 하기 ───────── */
+function resetMeasure(){
+  run = null; data = []; done = false; light = false; sensor = 'off'; clearTimeout(connTimer);
+  clearAnswers(); updateClock(0); renderMeasure(); drawChart();
+  $('.col-data').scrollTo({ top: 0 });
+}
+function resetBuild(){
+  resetMeasure();
+  installed.clear(); select(null);
+  KEYS.forEach(k => {
+    OBJ[k].classList.add('gone'); OBJ[k].classList.remove('in');
+    ZONE[k].classList.remove('done', 'hot'); PART[k].classList.remove('done'); PART[k].removeAttribute('aria-disabled');
+  });
+  $('#sh-lamp').classList.add('gone');
+  updateBuild();
+}
+$('#measureReset').addEventListener('click', resetMeasure);
+$('#buildReset').addEventListener('click', () => { resetBuild(); showTab('build'); });
+
+/* 그림 비율을 실제 파일에서 읽어 배치를 확정한다 */
+const IMG = { box:'#o-box', spinach:'#o-spinach', lamp:'#o-lamp', co2:'#o-co2', o2:'#o-o2' };
+Promise.all(Object.entries(IMG).map(([k, sel]) => {
+  const im = $(sel + ' img');
+  const read = () => { if(im.naturalWidth) AR[k] = im.naturalHeight / im.naturalWidth; };
+  return im.complete ? read() : new Promise(r => { im.onload = () => { read(); r(); }; im.onerror = r; });
+})).then(layout);
+layout(); updateBuild(); renderMeasure(); updateClock(0);
+</script>
+</body>
+</html>

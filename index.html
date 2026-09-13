@@ -125,10 +125,12 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .screen.on{display:grid}
 .col{display:flex;flex-direction:column;gap:12px;min-width:0}
 #build{grid-template-columns:232px minmax(0,1fr) 272px}
-#measure{grid-template-columns:minmax(0,1.42fr) minmax(330px,1fr);height:520px;height:max(520px, calc(100vh - var(--bar)));height:max(520px, calc(100dvh - var(--bar)));padding-bottom:0}
+#measure{grid-template-columns:minmax(0,1.42fr) minmax(330px,1fr);height:calc(100vh - var(--bar));min-height:520px;padding-bottom:0}
 #measure .col{height:100%;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding-bottom:16px}
 .stage-title{margin:0;font-size:18px;font-weight:700;line-height:1.4}
-.stage-wrap{width:100%;width:min(100%, max(320px, calc((100vh - var(--bar) - 32px - var(--below)) * 1.5)));width:min(100%, max(320px, calc((100dvh - var(--bar) - 32px - var(--below)) * 1.5)));margin:0 auto}
+.stage-wrap{width:100%;max-width:calc((100vh - var(--bar) - 32px - var(--below)) * 1.5);min-width:min(100%, 320px);margin:0 auto}
+/* dvh는 아는 브라우저에서만 — var()가 섞인 선언은 모르는 브라우저에서 계산 시점에 무효가 되어 앞줄 대비값도 못 쓰고 unset이 된다(갤럭시탭 크롬 108 미만에서 실험대 폭 0) */
+@supports (height:100dvh){.stage-wrap{max-width:calc((100dvh - var(--bar) - 32px - var(--below)) * 1.5)}#measure{height:calc(100dvh - var(--bar))}.chart canvas{height:clamp(150px, calc((100dvh - var(--bar) - 380px) / 2), 240px)}}
 #build .stage-wrap{--below:96px}
 #measure .stage-wrap{--below:210px}
 
@@ -255,7 +257,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 .val b{font-size:28px;font-weight:700;letter-spacing:-.01em;line-height:1.25}
 .val small{font-size:13px;color:var(--sub);margin-left:3px}
 .val.dim b{color:#9AA6B5}
-.chart canvas{display:block;width:100%;height:150px;height:clamp(150px, calc((100vh - var(--bar) - 380px) / 2), 240px);height:clamp(150px, calc((100dvh - var(--bar) - 380px) / 2), 240px);margin-top:2px}
+.chart canvas{display:block;width:100%;height:clamp(150px, calc((100vh - var(--bar) - 380px) / 2), 240px);margin-top:2px}
 .note{font-size:12px;color:var(--sub);margin:6px 0 0;line-height:1.5}
 
 /* ── 2단계: 탐구 결과 기록 ── */
@@ -310,7 +312,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 /* 폭이 좁은 화면(세로 태블릿 포함): 1단계는 위아래로 — 준비물 → 실험대 → 탐구 과정 */
 @media (max-width:1023px){
   #build{grid-template-columns:1fr}
-  #build .stage-wrap{width:100%}
+  #build .stage-wrap{width:100%;max-width:none}
   .parts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
   .part{flex-direction:column;align-items:center;text-align:center;gap:4px;min-height:0;padding:8px 6px}
   .part .ck{position:absolute;margin:0;top:5px;right:5px;width:16px;height:16px}
@@ -325,7 +327,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
 /* 세로 태블릿: 2단계는 좌우 배치 그대로, 실험 칸을 조금 좁게 */
 @media (orientation:portrait) and (min-width:600px){
   #measure{grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:12px;padding-left:12px;padding-right:12px}
-  #measure .stage-wrap{width:100%}
+  #measure .stage-wrap{width:100%;max-width:none}
   #measure .stage-title{font-size:15px}
   .ctrl{grid-template-columns:1fr 1fr}
   .runrow{flex-wrap:wrap}
@@ -346,7 +348,7 @@ button{font:inherit;color:inherit;touch-action:manipulation}
   .screen{padding:10px}
   #measure{grid-template-columns:1fr;height:auto;padding-bottom:10px}
   #measure .col{height:auto;overflow:visible;padding-bottom:0}
-  .stage-wrap{width:100%!important}
+  .stage-wrap{width:100%!important;max-width:none!important}
   .parts{gap:6px}
   .part b{font-size:12px}
   .part small{display:none}
